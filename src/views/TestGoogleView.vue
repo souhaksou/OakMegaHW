@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted } from 'vue';
 
 const GoogleID = import.meta.env.VITE_GOOGLE_ID;
 
@@ -12,7 +12,7 @@ const triggerGoogleBtn = () => {
 const googleUser = ref(null);
 
 const handleCredentialResponse = (response) => {
-  console.log("Google Credential Response:", response);
+  console.log('Google Credential Response:', response);
 
   const base64Url = response.credential.split('.')[1];
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -28,7 +28,7 @@ const handleCredentialResponse = (response) => {
     avatar: payload.picture
   };
 
-  console.log("Google User:", googleUser.value);
+  console.log('Google User:', googleUser.value);
 }
 
 onMounted(() => {
@@ -39,7 +39,7 @@ onMounted(() => {
   });
   google.accounts.id.renderButton(
     googleBtn.value,
-    { theme: "outline", size: "large" }
+    { theme: 'outline', size: 'large' }
   );
 });
 </script>

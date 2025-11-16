@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted } from 'vue';
 
 const FB_APP_ID = import.meta.env.VITE_FB_ID;
 
@@ -20,31 +20,31 @@ const initFacebookSDK = () => {
     appId: FB_APP_ID,
     cookie: true,
     xfbml: false,
-    version: "v19.0",
+    version: 'v19.0',
   });
 };
 
 /* --- 觸發 FB 登入 --- */
 const loginWithFacebook = () => {
   if (!window.FB) {
-    alert("Facebook SDK 尚未載入完成");
+    alert('Facebook SDK 尚未載入完成');
     return;
   }
 
   window.FB.login(
     (response) => {
-      if (response.status === "connected") {
+      if (response.status === 'connected') {
         getFacebookUser();
       } else {
-        alert("Facebook 登入取消或失敗");
+        alert('Facebook 登入取消或失敗');
       }
     },
-    { scope: "" }
+    { scope: '' }
   );
 };
 
 const getFacebookUser = () => {
-  window.FB.api("/me", { fields: "id,name,picture" }, (res) => {
+  window.FB.api('/me', { fields: 'id,name,picture' }, (res) => {
     facebookUser.value = {
       id: res.id,
       name: res.name,

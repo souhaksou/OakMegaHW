@@ -6,22 +6,27 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/HomeView.vue'),
+      component: () => import('@/views/HomeView.vue'),
+    },
+    {
+      path: '/map',
+      name: 'map',
+      component: () => import('@/views/MapView.vue'),
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue'),
+      component: () => import('@/views/LoginView.vue'),
     },
     {
       path: '/testgoogle',
       name: 'testgoogle',
-      component: () => import('../views/TestGoogleView.vue'),
+      component: () => import('@/views/TestGoogleView.vue'),
     },
     {
       path: '/testfb',
       name: 'testfb',
-      component: () => import('../views/TestFBView.vue'),
+      component: () => import('@/views/TestFBView.vue'),
     },
   ],
 })
