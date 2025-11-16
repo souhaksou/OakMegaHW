@@ -9,23 +9,29 @@ import fs from 'fs'
 import masterCSS from '@master/css.vite'
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools(),
-    masterCSS()
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+export default defineConfig(({ mode }) => {
+  const isDev = mode === 'development'
+
+  return {
+    plugins: [
+      vue(),
+      vueDevTools(),
+      masterCSS()
+    ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      },
     },
-  },
-  server: {
-    https: {
-      key: fs.readFileSync('./localhost-key.pem'),
-      cert: fs.readFileSync('./localhost.pem'),
-    },
-    host: 'localhost',
-    port: 5173,
+    server: isDev
+      ? {
+        https: {
+          key: fs.readFileSync('./localhost-key.pem'),
+          cert: fs.readFileSync('./localhost.pem'),
+        },
+        host: 'localhost',
+        port: 5173,
+      }
+      : undefined,
   }
 })
