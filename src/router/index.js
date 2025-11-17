@@ -14,6 +14,11 @@ const router = createRouter({
       component: () => import('@/views/MapView.vue'),
     },
     {
+      path: '/polygon',
+      name: 'polygon',
+      component: () => import('@/views/PolygonView.vue'),
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/views/LoginView.vue'),
