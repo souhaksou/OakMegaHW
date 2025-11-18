@@ -25,7 +25,7 @@ const initMap = () => {
   }).addTo(map.value);
 };
 
-const drawPolygon = () => {
+const renderPolygon = () => {
   L.geoJSON(api2.result, {
     style: {
       color: "#ff6600",
@@ -37,7 +37,7 @@ const drawPolygon = () => {
 
 onMounted(async () => {
   initMap();
-  drawPolygon();
+  renderPolygon();
 
   // const res = await getPolygons({ directory: 'tucheng.json' });
   // console.log('res = ', res);

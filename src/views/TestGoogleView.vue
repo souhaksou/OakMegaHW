@@ -23,6 +23,8 @@ const handleCredentialResponse = (response) => {
       .join('')
   );
   const payload = JSON.parse(jsonPayload);
+  console.log('payload = ', payload);
+
   googleUser.value = {
     name: payload.name,
     avatar: payload.picture
@@ -32,12 +34,12 @@ const handleCredentialResponse = (response) => {
 }
 
 onMounted(() => {
-  /* global google */
-  google.accounts.id.initialize({
+  window.google.accounts.id.initialize({
     client_id: GoogleID,
+    auto_select: false,
     callback: handleCredentialResponse
   });
-  google.accounts.id.renderButton(
+  window.google.accounts.id.renderButton(
     googleBtn.value,
     { theme: 'outline', size: 'large' }
   );

@@ -34,19 +34,27 @@
   </div>
   <div class="max-w:800 mx:auto">
     <p>list</p>
-    <div v-for="item in filteredList" :key="item.id" @click="twinklePin(item.id)"
-      class="flex jc:space-between ai:center">
-      <p>{{ item.stop_name }}</p>
-      <p>{{ item.name }}</p>
-      <p>{{ item.distance }} km</p>
+    <template v-for="(item, index) in filteredList" :key="item.id">
+      <div v-show="paginationShow(index)" @click="highlightMarker(item.id)"
+        class="flex jc:space-between ai:center p:4|8 b:1|solid|blue {b:1|solid|red;}.highlight"
+        :class="{ highlight: item.id === highlightedId }">
+        <p>{{ item.stop_name }}</p>
+        <p>{{ item.name }}</p>
+        <p>{{ item.distance }} km</p>
+      </div>
+    </template>
+    <div>
+      <PaginationControl :length="filteredList.length" :max="max" :show="show" :current="current"
+        @current="currentChange" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, shallowRef, computed, onMounted, onUnmounted } from 'vue';
+import { ref, shallowRef, computed, watch, onMounted, onUnmounted } from 'vue';
 import L from 'leaflet';
-import goldIconImg from '@/assets/goldIcon.png';
+import goldIconImg from '@/assets/images/goldIcon.png';
+import PaginationControl from '@/components/PaginationControl.vue';
 
 // 測試資料
 import api1 from '@/assets/api1.json';
@@ -56,8 +64,8 @@ let currentMarker = null;
 let previousMarker = null;
 
 // 座標
-const currentPin = ref([25.012222, 121.465556]);
-const previousPin = ref(null);
+const currentPosition = ref([25.012222, 121.465556]);
+const previousPosition = ref(null);
 
 // 建立 icon
 const createUserIcon = (color) => {
@@ -76,9 +84,9 @@ const createUserIcon = (color) => {
 
 const mapContainer = ref(null);
 const map = shallowRef(null);
-const initMap = () => {
+const initializeMap = () => {
   map.value = L.map(mapContainer.value, {
-    center: currentPin.value,
+    center: currentPosition.value,
     zoom: 13,
   });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -86,7 +94,7 @@ const initMap = () => {
   }).addTo(map.value);
 
   // 初始化 marker
-  currentMarker = L.marker(currentPin.value, { icon: createUserIcon('#6B4BFF') })
+  currentMarker = L.marker(currentPosition.value, { icon: createUserIcon('#6B4BFF') })
     .addTo(map.value)
     .bindTooltip('<p>google</p><br /><p>facebook</p>');
 
@@ -100,10 +108,10 @@ const handleMapClick = (e) => {
 
   // 1. 如果還沒有舊 marker，產生舊 marker
   if (!previousMarker && currentMarker) {
-    previousMarker = L.marker([...currentPin.value], { icon: createUserIcon('black') })
+    previousMarker = L.marker([...currentPosition.value], { icon: createUserIcon('black') })
       .addTo(map.value)
       .bindTooltip('<p>google</p><br /><p>facebook</p>');
-    previousPin.value = [...currentPin.value];
+    previousPosition.value = [...currentPosition.value];
   }
 
   // 2. 移動 marker 到新位置
@@ -116,36 +124,36 @@ const handleMapClick = (e) => {
   }
 
   // 3. 更新最新座標
-  currentPin.value = [lat, lng];
+  currentPosition.value = [lat, lng];
 };
 
 // 接受按鈕
-const acceptLocation = () => {
+const confirmUserPosition = () => {
   if (previousMarker) {
     map.value.removeLayer(previousMarker);
     previousMarker = null;
-    previousPin.value = null;
+    previousPosition.value = null;
   }
-  console.log(currentPin.value);
-  map.value.panTo([...currentPin.value]);
+  console.log(currentPosition.value);
+  map.value.panTo([...currentPosition.value]);
 };
 
 const list = ref([]);
 let markers = [];
-const goldIcon = L.icon({
+const highlightIcon = L.icon({
   iconUrl: goldIconImg,
   iconSize: [27, 44],   // 輕微放大版
   iconAnchor: [13, 44], // anchor 也要跟著調整
 });
-
-const drawMarkers = (list) => {
+const highlightedId = ref(null);
+const renderMarkers = (list) => {
   // 先清除舊的 markers
   markers.forEach(marker => {
     map.value.removeLayer(marker); // 移除舊 marker
   });
   markers = []; // 清空陣列
   list.forEach((item) => {
-    if (!item.latitude || !item.longitude) return;
+    if (item.latitude == null || item.longitude == null) return;
     const marker = L.marker([item.latitude, item.longitude])
       .addTo(map.value)
       .bindTooltip(`
@@ -155,6 +163,16 @@ const drawMarkers = (list) => {
     `);
     marker._originalIcon = marker.options.icon;
     marker.itemId = item.id;
+    marker.on('click', () => {
+      highlightedId.value = marker.itemId;
+      const targetIndex = filteredList.value.findIndex(l => l.id === marker.itemId);
+      if (targetIndex !== -1) {
+        const page = Math.floor(targetIndex / show) + 1;
+        currentChange(page);
+      }
+      // 1 秒後取消 highlight
+      setTimeout(() => { highlightedId.value = null; }, 1000);
+    });
     markers.push(marker);
   });
 };
@@ -162,10 +180,11 @@ const drawMarkers = (list) => {
 const maxDistance = ref(1.0);
 const maxCount = ref(10);
 const searchData = () => {
+  if (!map.value) return;
   const rawData = api1.result;
   list.value = filterData(rawData, maxDistance.value, maxCount.value);
-  acceptLocation();
-  drawMarkers(list.value);
+  confirmUserPosition();
+  renderMarkers(list.value);
 };
 const filterData = (data, maxDistance = 1, maxCount = 10) => {
   // 過濾距離
@@ -188,8 +207,28 @@ const clearKeyword = () => {
 const filteredList = computed(() => {
   return list.value.filter(item => item.stop_name.toLowerCase().includes(keyword.value.toLowerCase()));
 });
+watch(filteredList, () => {
+  currentChange(1);
+});
 
-const twinklePin = (id) => {
+const show = 5;
+const max = computed(() => {
+  return Math.ceil(filteredList.value.length / show);
+});
+const current = ref(1);
+const currentChange = (value) => {
+  current.value = value;
+};
+const paginationShow = (num) => {
+  if (num < current.value * show && num >= (current.value - 1) * show) {
+    return true;
+  }
+  else {
+    return false;
+  }
+};
+
+const highlightMarker = (id) => {
   const target = markers.find(m => m.itemId === id);
   if (!target) return;
 
@@ -197,7 +236,7 @@ const twinklePin = (id) => {
   map.value.setView(target.getLatLng());
 
   // 換成你匯入的黃色 icon
-  target.setIcon(goldIcon);
+  target.setIcon(highlightIcon);
 
   // 1 秒後換回原本的（預設藍色那顆）
   setTimeout(() => {
@@ -207,11 +246,8 @@ const twinklePin = (id) => {
   }, 1000);
 };
 
-
-
-
 onMounted(() => {
-  initMap();
+  initializeMap();
 });
 
 onUnmounted(() => {
@@ -221,6 +257,19 @@ onUnmounted(() => {
   }
 });
 
+/* 🎨 UI 層（地圖頁、Vue Component）決定實際圖片路徑 在地圖頁（MapView.vue 或 MapPage.vue）
+你做： const googleDefaultAvatar = new URL('../assets/google-default.png', import.meta.url).href; 
+const facebookDefaultAvatar = new URL('../assets/facebook-default.png', import.meta.url).href; 
+然後建立 resolver： const resolveAvatar = (val) =>
+ { if (val === 'GOOGLE_DEFAULT_AVATAR') { return googleDefaultAvatar; } 
+  if (val === 'FACEBOOK_DEFAULT_AVATAR') { return facebookDefaultAvatar; } return val; // 真實的使用者頭貼 }; 
+  // 然後： const googleAvatar = resolveAvatar(auth.google.avatar); 
+  // const facebookAvatar = resolveAvatar(auth.facebook.avatar);
+  //  🗺 Leaflet Tooltip 用起來就像這樣
+  //  const tooltip = <div class="tooltip-container">
+  // <img class="avatar" src="${googleAvatar}"
+  // > <img class="avatar" src="${facebookAvatar}"> </div> ; 
+*/
 </script>
 
 <style scoped>

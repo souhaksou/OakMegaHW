@@ -1,6 +1,6 @@
 import axios from '@/api/axios';
 
-export const apiRequest = async (method, url, data = {}, config = {}) => {
+const apiRequest = async (method, url, data = {}, config = {}) => {
   try {
     const response = await axios({
       method,
@@ -20,4 +20,6 @@ export const apiRequest = async (method, url, data = {}, config = {}) => {
       error
     };
   }
-}
+};
+
+export { apiRequest }
