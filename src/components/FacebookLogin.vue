@@ -36,7 +36,8 @@ const onFacebookLoginSuccess = async () => {
     title: '成功!',
     text: `${profile.name} 成功登入`,
     icon: 'success',
-    timer: 1500,
+    timer: 1000,
+    showConfirmButton: false,
   });
 };
 

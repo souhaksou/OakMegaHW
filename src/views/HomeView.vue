@@ -1,19 +1,17 @@
 <script setup>
-import { ref, shallowRef, computed, watch, onMounted, nextTick } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, shallowRef, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { useAuthStore } from '@/stores/auth';
-// import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 
 import L from 'leaflet';
 import goldIconImg from '@/assets/images/goldIcon.png';
 import PaginationControl from '@/components/PaginationControl.vue';
+import LogoutControl from '@/components/LogoutControl.vue';
 
-const router = useRouter();
 const auth = useAuthStore();
 
-// 測試資料
-import api1 from '@/assets/api1.json';
-// import api2 from '@/assets/api2.json';
+// api
+import { calculateDistance, getPolygons } from '@/api/userApi';
 
 // Marker
 let currentMarker = null;
@@ -39,6 +37,8 @@ const createUserIcon = (color) => {
 
 const mapContainer = ref(null);
 const map = shallowRef(null);
+let googleBlobUrl = null;
+let facebookBlobUrl = null;
 const initializeMap = async () => {
   map.value = L.map(mapContainer.value, {
     center: currentPosition.value,
@@ -55,8 +55,8 @@ const initializeMap = async () => {
     tileLayer = L.tileLayer(backupUrl, { maxZoom: 19 }).addTo(map.value);
   });
 
-  let googleBlobUrl = await loadFacebookImageToBlobURL(auth.google.avatar);
-  let facebookBlobUrl = await loadFacebookImageToBlobURL(auth.facebook.avatar);
+  googleBlobUrl = await loadImageToBlobURL(auth.google.avatar);
+  facebookBlobUrl = await loadImageToBlobURL(auth.facebook.avatar);
   if (googleBlobUrl === 'default') {
     googleBlobUrl = new URL('../assets/images/defaultGoogle.svg', import.meta.url).href;
   }
@@ -92,7 +92,7 @@ const initializeMap = async () => {
   map.value.on('click', handleMapClick);
 };
 
-const loadFacebookImageToBlobURL = async (downloadUrl) => {
+const loadImageToBlobURL = async (downloadUrl) => {
   try {
     const response = await fetch(downloadUrl);
     const blob = await response.blob();
@@ -104,7 +104,7 @@ const loadFacebookImageToBlobURL = async (downloadUrl) => {
     return URL.createObjectURL(blob);
   } catch (error) {
     console.error('Error loading image:', error);
-    return 'defalut';
+    return 'default';
   }
 };
 
@@ -188,12 +188,22 @@ const renderMarkers = (list) => {
 
 const maxDistance = ref(1.0);
 const maxCount = ref(10);
-const searchData = () => {
+const searchData = async () => {
   if (!map.value) return;
-  const rawData = api1.result;
-  list.value = filterData(rawData, maxDistance.value, maxCount.value);
-  confirmUserPosition();
-  renderMarkers(list.value);
+  const [lat, lng] = currentPosition.value;
+  const res = await calculateDistance({ lat, lng });
+  if (res.ok) {
+    const rawData = res.data.result;
+    list.value = filterData(rawData, maxDistance.value, maxCount.value);
+    confirmUserPosition();
+    renderMarkers(list.value);
+  } else {
+    Swal.fire({
+      title: '錯誤',
+      text: '附近的都更地點資料取得失敗',
+      icon: 'error',
+    });
+  }
 };
 const filterData = (data, maxDistance = 1, maxCount = 10) => {
   // 過濾距離
@@ -255,33 +265,38 @@ const highlightMarker = (id) => {
   }, 1000);
 };
 
-// const renderPolygon = () => {
-//   L.geoJSON(api2.result, {
-//     style: {
-//       color: "#ff6600",
-//       weight: 2,
-//       fillOpacity: 0.25,
-//     },
-//   }).addTo(map.value);
-// };
+const renderPolygon = async () => {
+  const res = await getPolygons({ directory: 'tucheng.json' });
+  if (res.ok) {
+    L.geoJSON(res.data.result, {
+      style: {
+        color: "#ff6600",
+        weight: 2,
+        fillOpacity: 0.25,
+      },
+    }).addTo(map.value);
+  } else {
+    Swal.fire({
+      title: '錯誤',
+      text: '都更地點 Polygon 資料取得失敗',
+      icon: 'error',
+    });
+  }
+};
 
 onMounted(async () => {
   await nextTick();
-  initializeMap();
-  // renderPolygon();
+  await initializeMap();
+  await renderPolygon();
 });
 
-const logoutAll = () => {
-  try {
-    auth.logout();
-    window.FB?.logout();
-  } catch (error) {
-    console.error(error);
-  } finally {
-    router.push('/login');
-    window.location.reload();
+onUnmounted(() => {
+  if (map.value) {
+    map.value.remove();
   }
-};
+  if (googleBlobUrl) URL.revokeObjectURL(googleBlobUrl);
+  if (facebookBlobUrl) URL.revokeObjectURL(facebookBlobUrl);
+});
 </script>
 
 <template>
@@ -347,8 +362,7 @@ const logoutAll = () => {
         </table>
       </div>
     </div>
-    <button @click="logoutAll" class="inline-block p:4|8 r:4 abs fixed bottom:16 right:16 fg:white bg:text-sub">
-      <i class="bi bi-person-circle"></i><span class="ml:8">登出</span></button>
+    <LogoutControl />
   </section>
 </template>
 

@@ -21,7 +21,8 @@ const onGoogleCredentialReceived = (response) => {
     title: '成功!',
     text: `${payload.name} 成功登入`,
     icon: 'success',
-    timer: 1500,
+    timer: 1000,
+    showConfirmButton: false,
   });
 };
 

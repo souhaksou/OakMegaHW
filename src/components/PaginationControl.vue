@@ -12,7 +12,7 @@ const props = defineProps({
   },
   length: {
     type: Number,
-    defaulut: () => 0
+    default: () => 0
   },
   show: {
     type: Number,

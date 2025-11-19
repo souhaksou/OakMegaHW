@@ -21,7 +21,7 @@ watch(
         Swal.fire({
           title: '即將進入系統…',
           html: '這個視窗將在 <b></b> 秒後關閉',
-          timer: 3000,
+          timer: 2000,
           timerProgressBar: true,
           allowOutsideClick: false,
           allowEscapeKey: false,
@@ -38,7 +38,7 @@ watch(
             router.push('/')
           }
         });
-      }, 3000);
+      }, 2000);
 
     }
   }
