@@ -1,9 +1,3 @@
-<template>
-  <div class="p:32 flex jc:center">
-    <div ref="mapContainer" class="leaflet-map"></div>
-  </div>
-</template>
-
 <script setup>
 import { ref, shallowRef, onMounted } from 'vue';
 import L from 'leaflet';
@@ -44,6 +38,12 @@ onMounted(async () => {
 
 });
 </script>
+
+<template>
+  <div class="p:32 flex jc:center">
+    <div ref="mapContainer" class="leaflet-map"></div>
+  </div>
+</template>
 
 <style scoped>
 .leaflet-map {

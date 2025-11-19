@@ -1,23 +1,27 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useAuthStore } from '@/stores/auth';
+import Swal from 'sweetalert2';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_ID;
 
 const auth = useAuthStore();
+const { google } = storeToRefs(auth);
 
 const googleButtonRef = ref(null);
-const showGoogleButton = ref(false);
-
-const showGoogleButtonHandler = () => {
-  showGoogleButton.value = true;
-};
 
 const onGoogleCredentialReceived = (response) => {
   const payload = decodeGoogleJwt(response.credential);
   auth.setGoogleUser({
     name: payload.name,
     avatar: payload.picture
+  });
+  Swal.fire({
+    title: '成功!',
+    text: `${payload.name} 成功登入`,
+    icon: 'success',
+    timer: 1500,
   });
 };
 
@@ -40,7 +44,6 @@ const decodeGoogleJwt = (jwt) => {
   return JSON.parse(jsonPayload);
 };
 
-
 /* --- 等待 window.google ready --- */
 onMounted(() => {
   const googleCheck = setInterval(() => {
@@ -60,7 +63,9 @@ onMounted(() => {
 
 <template>
   <div>
-    <div @click="showGoogleButtonHandler">my button</div>
-    <div ref="googleButtonRef" v-show="showGoogleButton"></div>
+    <p class="fg:text-sub mb:16"><span>Google</span><span v-show="!google.loggedIn" class="ml:16 fg:error">（未登入）</span>
+    </p>
+    <div ref="googleButtonRef" v-show="!google.loggedIn"></div>
+    <p v-show="google.loggedIn" class="fg:success">{{ `${google.name} 已經成功登入` }}</p>
   </div>
 </template>

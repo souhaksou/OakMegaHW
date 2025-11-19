@@ -1,62 +1,62 @@
 [
   {
     "name_zh": "主紫 1",
-    "name_en": "Primary Purple 1",
-    "hex": "#6B4BFF",
-    "usage": "Main brand purple for buttons, hero sections, and key visuals"
+    "name_en": "purple-main",
+    "hex": "#5D38DF"
   },
   {
     "name_zh": "主紫 2",
-    "name_en": "Primary Purple 2",
-    "hex": "#8E6BFF",
-    "usage": "Secondary purple for gradients, backgrounds, and highlight areas"
+    "name_en": "purple-sub",
+    "hex": "#6A48C5"
   },
   {
     "name_zh": "主橘",
-    "name_en": "Primary Orange",
-    "hex": "#FF9A3C",
-    "usage": "Accent color for icons, emphasis elements, and CTA hover states"
+    "name_en": "orange-main",
+    "hex": "#FFC044"
   },
   {
     "name_zh": "淺橘",
-    "name_en": "Light Orange",
-    "hex": "#FFE0B8",
-    "usage": "Soft orange for background blocks, tags, and subtle accents"
+    "name_en": "orange-light",
+    "hex": "#FFE37F"
   },
   {
     "name_zh": "淺紫 1",
-    "name_en": "Light Purple 1",
-    "hex": "#F2E9FF",
-    "usage": "Card backgrounds and light UI sections"
+    "name_en": "purple-main-light",
+    "hex": "#C3B5F1"
   },
   {
     "name_zh": "淺紫 2",
-    "name_en": "Light Purple 2",
-    "hex": "#F8F2FF",
-    "usage": "Page-level background and gentle UI dividers"
+    "name_en": "purple-sub-light",
+    "hex": "#DDD6FE"
   },
   {
-    "name_zh": "淡粉米",
-    "name_en": "Soft Beige Pink",
-    "hex": "#F4E5D8",
-    "usage": "Mascot or illustration background tone"
+    "name_zh": "淡色",
+    "name_en": "soft",
+    "hex": "#FBF8F6"
   },
   {
     "name_zh": "主要文字色",
-    "name_en": "Primary Text",
-    "hex": "#1F1330",
-    "usage": "Main body text and headings"
+    "name_en": "text-main",
+    "hex": "#101828"
   },
   {
     "name_zh": "次要文字色",
-    "name_en": "Secondary Text",
-    "hex": "#7C6F9A",
-    "usage": "Descriptions, labels, and secondary text"
+    "name_en": "text-sub",
+    "hex": "#475467"
   },
   {
     "name_zh": "背景白",
-    "name_en": "White Background",
-    "hex": "#FFFFFF",
-    "usage": "General purpose background and content areas"
+    "name_en": "background-white",
+    "hex": "#FFFFFF"
+  },
+  {
+    "name_zh": "成功訊息",
+    "name_en": "success",
+    "hex": "#198754"
+  },
+  {
+    "name_zh": "錯誤訊息",
+    "name_en": "error",
+    "hex": "#DC3545"
   }
 ]

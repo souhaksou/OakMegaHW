@@ -1,55 +1,3 @@
-<template>
-  <div class="p:32 flex jc:center">
-    <div ref="mapContainer" class="leaflet-map"></div>
-    <br>
-  </div>
-  <div class="max-w:800 mx:auto flex jc:start ai:center">
-    <div>
-      <span>距離</span>
-      <select v-model="maxDistance" class="mx:8">
-        <option :value="1">1</option>
-        <option :value="2">2</option>
-        <option :value="3">3</option>
-      </select>
-      <span>km</span>
-    </div>
-    <div class="w:32"></div>
-    <div>
-      <span>最多</span>
-      <select v-model="maxCount" class="mx:8">
-        <option :value="10">10</option>
-        <option :value="15">15</option>
-        <option :value="20">20</option>
-      </select>
-      <span>筆</span>
-    </div>
-    <div class="w:32"></div>
-    <button @click="searchData" class="inline-block p:4|8 r:4 b:1|solid|black">
-      <i class="f:14 bi bi-person-walking"></i><span class="ml:4">查詢</span>
-    </button>
-    <div class="w:32"></div>
-    <div><input ref="keywordInput" v-model="keyword" type="text" class="inline-block p:4|8 r:4 b:1|solid|black mr:8">
-      <button @click="clearKeyword" class="inline-block p:4|8 r:4 b:1|solid|black"><i class="bi bi-x"></i></button>
-    </div>
-  </div>
-  <div class="max-w:800 mx:auto">
-    <p>list</p>
-    <template v-for="(item, index) in filteredList" :key="item.id">
-      <div v-show="paginationShow(index)" @click="highlightMarker(item.id)"
-        class="flex jc:space-between ai:center p:4|8 b:1|solid|blue {b:1|solid|red;}.highlight"
-        :class="{ highlight: item.id === highlightedId }">
-        <p>{{ item.stop_name }}</p>
-        <p>{{ item.name }}</p>
-        <p>{{ item.distance }} km</p>
-      </div>
-    </template>
-    <div>
-      <PaginationControl :length="filteredList.length" :max="max" :show="show" :current="current"
-        @current="currentChange" />
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, shallowRef, computed, watch, onMounted, onUnmounted } from 'vue';
 import L from 'leaflet';
@@ -58,6 +6,7 @@ import PaginationControl from '@/components/PaginationControl.vue';
 
 // 測試資料
 import api1 from '@/assets/api1.json';
+// import api2 from '@/assets/api2.json';
 
 // Marker
 let currentMarker = null;
@@ -246,8 +195,19 @@ const highlightMarker = (id) => {
   }, 1000);
 };
 
+// const renderPolygon = () => {
+//   L.geoJSON(api2.result, {
+//     style: {
+//       color: "#ff6600",
+//       weight: 2,
+//       fillOpacity: 0.25,
+//     },
+//   }).addTo(map.value);
+// };
+
 onMounted(() => {
   initializeMap();
+  // renderPolygon();
 });
 
 onUnmounted(() => {
@@ -258,19 +218,71 @@ onUnmounted(() => {
 });
 
 /* 🎨 UI 層（地圖頁、Vue Component）決定實際圖片路徑 在地圖頁（MapView.vue 或 MapPage.vue）
-你做： const googleDefaultAvatar = new URL('../assets/google-default.png', import.meta.url).href; 
-const facebookDefaultAvatar = new URL('../assets/facebook-default.png', import.meta.url).href; 
+你做： const googleDefaultAvatar = new URL('../assets/google-default.png', import.meta.url).href;
+const facebookDefaultAvatar = new URL('../assets/facebook-default.png', import.meta.url).href;
 然後建立 resolver： const resolveAvatar = (val) =>
- { if (val === 'GOOGLE_DEFAULT_AVATAR') { return googleDefaultAvatar; } 
-  if (val === 'FACEBOOK_DEFAULT_AVATAR') { return facebookDefaultAvatar; } return val; // 真實的使用者頭貼 }; 
-  // 然後： const googleAvatar = resolveAvatar(auth.google.avatar); 
+ { if (val === 'GOOGLE_DEFAULT_AVATAR') { return googleDefaultAvatar; }
+  if (val === 'FACEBOOK_DEFAULT_AVATAR') { return facebookDefaultAvatar; } return val; // 真實的使用者頭貼 };
+  // 然後： const googleAvatar = resolveAvatar(auth.google.avatar);
   // const facebookAvatar = resolveAvatar(auth.facebook.avatar);
   //  🗺 Leaflet Tooltip 用起來就像這樣
   //  const tooltip = <div class="tooltip-container">
   // <img class="avatar" src="${googleAvatar}"
-  // > <img class="avatar" src="${facebookAvatar}"> </div> ; 
+  // > <img class="avatar" src="${facebookAvatar}"> </div> ;
 */
 </script>
+
+<template>
+  <div class="p:32 flex jc:center">
+    <div ref="mapContainer" class="leaflet-map"></div>
+    <br>
+  </div>
+  <div class="max-w:800 mx:auto flex jc:start ai:center">
+    <div>
+      <span>距離</span>
+      <select v-model="maxDistance" class="mx:8">
+        <option :value="1">1</option>
+        <option :value="2">2</option>
+        <option :value="3">3</option>
+      </select>
+      <span>km</span>
+    </div>
+    <div class="w:32"></div>
+    <div>
+      <span>最多</span>
+      <select v-model="maxCount" class="mx:8">
+        <option :value="10">10</option>
+        <option :value="15">15</option>
+        <option :value="20">20</option>
+      </select>
+      <span>筆</span>
+    </div>
+    <div class="w:32"></div>
+    <button @click="searchData" class="inline-block p:4|8 r:4 b:1|solid|black">
+      <i class="f:14 bi bi-person-walking"></i><span class="ml:4">查詢</span>
+    </button>
+    <div class="w:32"></div>
+    <div><input ref="keywordInput" v-model="keyword" type="text" class="inline-block p:4|8 r:4 b:1|solid|black mr:8">
+      <button @click="clearKeyword" class="inline-block p:4|8 r:4 b:1|solid|black"><i class="bi bi-x"></i></button>
+    </div>
+  </div>
+  <div class="max-w:800 mx:auto">
+    <p>list</p>
+    <template v-for="(item, index) in filteredList" :key="item.id">
+      <div v-show="paginationShow(index)" @click="highlightMarker(item.id)"
+        class="flex jc:space-between ai:center p:4|8 b:1|solid|blue {b:1|solid|red;}.highlight"
+        :class="{ highlight: item.id === highlightedId }">
+        <p>{{ item.stop_name }}</p>
+        <p>{{ item.name }}</p>
+        <p>{{ item.distance }} km</p>
+      </div>
+    </template>
+    <div>
+      <PaginationControl :length="filteredList.length" :max="max" :show="show" :current="current"
+        @current="currentChange" />
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .leaflet-map {

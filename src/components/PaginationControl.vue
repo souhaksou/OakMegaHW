@@ -62,8 +62,8 @@ const goto = (key) => {
 </script>
 
 <template>
-  <nav class="grid-cols:3">
-    <div></div>
+  <nav class="flex jc:space-between ai:center {block;grid-cols:3;}@xs">
+    <div class="hidden block@xs"></div>
     <div v-show="length > 0" class="flex jc:center ai:center {inline-block;px:4;}>a">
       <a @click="goto(-2)"><i class="bi bi-chevron-bar-left"></i></a>
       <a @click="goto(-1)"><i class="bi bi-chevron-left"></i></a>

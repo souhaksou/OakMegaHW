@@ -1,4 +1,8 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router';
+
+import { useAuthStore } from '@/stores/auth';
+
+import NotFound from '@/views/NotFound.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,6 +11,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: () => import('@/views/HomeView.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/map',
@@ -24,19 +29,35 @@ const router = createRouter({
       component: () => import('@/views/LoginView.vue'),
     },
     {
-      path: '/testgoogle',
-      name: 'testgoogle',
-      component: () => import('@/views/TestGoogleView.vue'),
+      path: '/test',
+      name: 'test',
+      component: () => import('@/views/TestView.vue'),
     },
     {
-      path: '/testfb',
-      name: 'testfb',
-      component: () => import('@/views/TestFBView.vue'),
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: NotFound,
+      meta: { requiresAuth: true }
     },
   ],
-})
+});
 
-export default router
+router.beforeEach((to, from, next) => {
+  const auth = useAuthStore();
+  // 如果路由需要登入但尚未登入
+  if (to.meta.requiresAuth && !auth.isAuthenticated) {
+    next('/login');
+    return;
+  }
+  // 如果已經登入，卻又跑去 /login → 強制回首頁
+  if (to.path === '/login' && auth.isAuthenticated) {
+    next('/');
+    return;
+  }
+  next();
+});
+
+export default router;
 
 
 // import { createRouter, createWebHistory } from 'vue-router'

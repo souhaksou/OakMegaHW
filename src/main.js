@@ -1,5 +1,3 @@
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import 'leaflet/dist/leaflet.css';
 import '@/assets/main.css';
 
 import { createApp } from 'vue';
