@@ -10,9 +10,4 @@ export default {
   variables: {
     color: colors
   }
-  // components: {
-  //     btn: {
-  //         '': 'inline-flex p:4|8 r:4 b:1|solid|black',
-  //     }
-  // }
 }

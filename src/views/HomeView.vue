@@ -3,10 +3,10 @@ import { ref, shallowRef, computed, watch, onMounted, onUnmounted, nextTick } fr
 import { useAuthStore } from '@/stores/auth';
 import Swal from 'sweetalert2';
 
-import L from 'leaflet'
-import markerIcon from 'leaflet/dist/images/marker-icon.png'
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
-import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+import L from 'leaflet';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -281,7 +281,7 @@ const renderPolygon = async () => {
   if (res.ok) {
     L.geoJSON(res.data.result, {
       style: {
-        color: "#ff6600",
+        color: '#FF6600',
         weight: 2,
         fillOpacity: 0.25,
       },

@@ -6,7 +6,7 @@ const router = useRouter();
 
 onMounted(() => {
   setTimeout(() => {
-    router.push('/')
+    router.push('/');
   }, 3000);
 })
 </script>

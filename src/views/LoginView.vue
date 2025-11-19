@@ -39,10 +39,9 @@ watch(
           }
         });
       }, 2000);
-
     }
   }
-)
+);
 </script>
 
 <template>
