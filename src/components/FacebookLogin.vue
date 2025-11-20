@@ -75,6 +75,12 @@ onMounted(() => {
     }
   }, 300);
 });
+
+// 暫時跳過 facebook 登入
+auth.setFacebookUser({
+  name: 'demo',
+  avatar: 'demo'
+});
 </script>
 
 <template>

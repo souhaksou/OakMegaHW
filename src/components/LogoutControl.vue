@@ -10,13 +10,14 @@ const auth = useAuthStore();
 const logoutAll = () => {
   try {
     auth.logout();
-    if (window.FB && window.FB.getLoginStatus) {
-      window.FB.getLoginStatus(response => {
-        if (response.status === 'connected') {
-          window.FB.logout();
-        }
-      });
-    }
+    // 暫時跳過 facebook 登入
+    // if (window.FB && window.FB.getLoginStatus) {
+    //   window.FB.getLoginStatus(response => {
+    //     if (response.status === 'connected') {
+    //       window.FB.logout();
+    //     }
+    //   });
+    // }
   } catch (error) {
     console.error('Logout error:', error);
   } finally {
