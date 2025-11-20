@@ -74,12 +74,12 @@ onMounted(() => {
       initFacebookSdk(FB_APP_ID);
     }
   }, 300);
-});
 
-// 暫時跳過 facebook 登入
-auth.setFacebookUser({
-  name: 'demo',
-  avatar: 'demo'
+  // 暫時跳過 facebook 登入
+  auth.setFacebookUser({
+    name: 'demo',
+    avatar: 'demo'
+  });
 });
 </script>
 
